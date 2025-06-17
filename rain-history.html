@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- YOUR API KEY -->
+  <meta name="WeatherSTEM-api-key" content="xf57lyl3"/>
+  <!-- FULL station ID here -->
+  <meta name="WeatherSTEM-station" content="kyleem@hays.weatherstem.com"/>
+  <title>Last 30 Days Rainfall</title>
+  <style>
+    body { margin:0; font-family:sans-serif; }
+    #container { padding:10px; }
+    canvas { width:100% !important; height:200px !important; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div id="container">
+    <h4 style="text-align:center; margin:0 0 10px;">
+      Daily Rainfall (Last 30 Days)
+    </h4>
+    <canvas id="rainChart"></canvas>
+  </div>
+
+  <script>
+    // 1) build our date range
+    const now = new Date();
+    const past = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 29);
+    const fmt = d => d.toISOString().slice(0,19).replace('T',' ');
+
+    // 2) payload with correct station ID
+    const payload = {
+      api_key: document.querySelector('meta[name="WeatherSTEM-api-key"]').content,
+      stations: [ document.querySelector('meta[name="WeatherSTEM-station"]').content ],
+      from: fmt(past),
+      to:   fmt(now),
+      sensors: ["Rain Gauge"]
+    };
+
+    // 3) JSONP call
+    const url = 'https://api.weatherstem.com/api'
+              + '?input=' + encodeURIComponent(JSON.stringify(payload))
+              + '&callback=renderRainChart';
+    const s = document.createElement('script');
+    s.src = url;
+    document.head.appendChild(s);
+
+    // 4) callback to aggregate & draw
+    function renderRainChart(data) {
+      console.log('raw data:', data); // for debugging
+      const history = data.results[0].history || [];
+      const daily = {};
+
+      history.forEach(pt => {
+        const day = pt.timestamp.split(' ')[0];
+        daily[day] = (daily[day]||0) + pt.sensors["Rain Gauge"];
+      });
+
+      const labels = Object.keys(daily).sort();
+      const values = labels.map(d => Math.round(daily[d]*100)/100);
+
+      new Chart(document.getElementById('rainChart'), {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Inches',
+            data: values,
+            barPercentage: 0.8
+          }]
+        },
+        options: {
+          scales: {
+            x: { ticks: { autoSkip: true, maxTicksLimit: 10 } },
+            y: { beginAtZero: true }
+          },
+          plugins: { legend: { display: false } },
+          maintainAspectRatio: false
+        }
+      });
+    }
+  </script>
+</body>
+</html>
