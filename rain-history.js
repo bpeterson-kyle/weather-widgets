@@ -19,7 +19,7 @@ function fetchHistory(cb){
 }
 
 /* choose correct rain field once */
-const prefer = ["Rain Gauge","Rain Collector"];
+const prefer = ["Rain Gauge"];
 
 function rainKey(keys){
   for(const k of prefer) if(keys.includes(k)) return k;
