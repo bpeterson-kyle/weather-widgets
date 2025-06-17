@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Daily Rainfall – Last 30 Days</title>
+
+  <!-- WeatherSTEM creds -->
+  <meta name="WeatherSTEM-api-key"  content="xf57lyl3">
+  <meta name="WeatherSTEM-station"  content="kyleem@hays.weatherstem.com">
+
+  <!-- Chart.js: choose ONE of these -->
+  <script src="chart.min.js"></script>           <!-- self-host -->
+  <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> --> <!-- CDN -->
+
+  <script src="rain-history.js"></script>
+</head>
+<body>
+  <h4 style="text-align:center;margin:0 0 10px">
+    Daily Rainfall (Last 30 Days)
+  </h4>
+  <canvas id="rainChart"></canvas>
+</body>
+</html>
